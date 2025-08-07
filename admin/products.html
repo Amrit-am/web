@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    API Usage:
+    - All product CRUD operations use http://localhost:5000/api/products
+    - Health check: http://localhost:5000/ping (returns 'pong' if backend is up)
+    - If you see 'Server error', check browser dev tools and backend logs.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .floating-back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center; gap: 8px;
+            font-family: 'Arial', sans-serif;
+        }
+        .floating-back-button:hover {
+            background-color: #45a049;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .product-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .switch {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Check Script -->
+    
+    <!-- Navigation (Same as customers.html, update active link to products) -->
+    <nav class="dashboard-nav">
+
+        <a class="nav-link-admin nav-link active" href="products.html">
+            <i class="bi bi-box-seam me-2"></i> Products
+        </a>
+
+        <!-- ... -->
+    </nav>
+<a href="admin-dashboard.html" class="floating-back-button"> ← Back to Dashboard </a>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0"><i class="bi bi-box-seam"></i> Product Management</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal" id="addProductBtn">
+                <i class="bi bi-plus-circle"></i> Add Product
+            </button>
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+        </div>
+        <div class="card shadow">
+            <div class="card-body">
+                <table class="table table-hover align-middle" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Products will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    <!-- Product Modal (Add/Edit) -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content" id="productForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="productModalLabel">Add/Edit Product</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <input type="hidden" id="productId">
+              <div class="mb-3">
+                  <label for="productName" class="form-label">Product Name</label>
+                  <input type="text" class="form-control" id="productName" required>
+              </div>
+              <div class="mb-3">
+                  <label for="productPrice" class="form-label">Price</label>
+                  <input type="number" class="form-control" id="productPrice" min="0" step="0.01" required>
+              </div>
+              <div class="mb-3">
+                  <label for="productStock" class="form-label">Stock</label>
+                  <input type="number" class="form-control" id="productStock" min="0" required>
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Product Image</label>
+                  <div class="input-group mb-2">
+                      <input type="file" class="form-control" id="productImageFile" accept="image/*">
+                  </div>
+                  <input type="text" class="form-control" id="productImage" placeholder="Or paste image URL here">
+                  <div class="form-text">Upload an image or provide an image URL.</div>
+              </div>
+              <div class="mb-3">
+                  <label for="productStatus" class="form-label">Status</label>
+                  <select class="form-select" id="productStatus">
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                  </select>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    </div>
+
+    <!-- Include Product Modal from previous examples -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// --- CONFIG ---
+const API_URL = 'http://localhost:5000/api/products'; // Backend API endpoint
+
+// --- HEALTH CHECK ---
+fetch('http://localhost:5000/ping').then(r=>r.text()).then(t=>console.log('API health:',t)).catch(()=>alert('Backend API not reachable!'));
+
+// --- RENDER PRODUCTS ---
+function renderProducts(products) {
+    const tbody = document.querySelector('#productsTable tbody');
+    tbody.innerHTML = '';
+    products.forEach(product => {
+        const tr = document.createElement('tr');
+        // Ensure price is a number before formatting
+        let price = 0;
+        if (typeof product.price === 'number') {
+            price = product.price;
+        } else if (typeof product.price === 'string' && !isNaN(product.price)) {
+            price = parseFloat(product.price);
+        }
+        tr.innerHTML = `
+            <td><img src="${product.imageUrl || 'https://via.placeholder.com/50'}" class="product-thumbnail"></td>
+            <td>${product.name}</td>
+            <td>$${price.toFixed(2)}</td>
+            <td>${product.stock || 0}</td>
+            <td>
+                <span class="badge ${product.status === 'active' ? 'bg-success' : 'bg-secondary'}">${product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : 'Inactive'}</span>
+                <div class="form-check form-switch d-inline-block ms-2">
+                    <input class="form-check-input switch" type="checkbox" ${product.status === 'active' ? 'checked' : ''} data-id="${product._id}">
+                </div>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-warning edit-btn" data-id="${product._id}"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="${product._id}"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// --- FETCH PRODUCTS ---
+async function fetchProducts() {
+    const res = await fetch(API_URL);
+    const products = await res.json();
+    renderProducts(products);
+}
+
+// --- ADD/EDIT PRODUCT ---
+document.getElementById('productForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const id = document.getElementById('productId').value;
+    const name = document.getElementById('productName').value;
+    const price = parseFloat(document.getElementById('productPrice').value);
+    const stock = parseInt(document.getElementById('productStock').value);
+    const status = document.getElementById('productStatus').value;
+    let imageUrl = document.getElementById('productImage').value.trim();
+    const fileInput = document.getElementById('productImageFile');
+    if (fileInput.files && fileInput.files[0]) {
+        // Upload image to server
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (uploadRes.ok) {
+            const data = await uploadRes.json();
+            imageUrl = data.url;
+        } else {
+            alert('Image upload failed.');
+            return;
+        }
+    }
+    const product = { name, price, stock, imageUrl, status };
+    let method = id ? 'PUT' : 'POST';
+    let url = id ? `${API_URL}/${id}` : API_URL;
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+    });
+    if (res.ok) {
+        fetchProducts();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('productModal')).hide();
+        this.reset();
+        document.getElementById('productId').value = '';
+        fileInput.value = '';
+    } else {
+        const error = await res.json();
+        alert(error.message || 'Failed to save product.');
+    }
+});
+
+// --- EDIT BUTTON ---
+document.querySelector('#productsTable').addEventListener('click', async function(e) {
+    if (e.target.closest('.edit-btn')) {
+        const id = e.target.closest('.edit-btn').dataset.id;
+        const res = await fetch(`${API_URL}/${id}`);
+        const product = await res.json();
+        document.getElementById('productId').value = product._id;
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productPrice').value = product.price;
+        document.getElementById('productStock').value = product.stock;
+        document.getElementById('productImage').value = product.imageUrl;
+        document.getElementById('productStatus').value = product.status;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('productModal')).show();
+    }
+    // --- DELETE BUTTON ---
+    if (e.target.closest('.delete-btn')) {
+        const id = e.target.closest('.delete-btn').dataset.id;
+        if (confirm('Are you sure you want to delete this product?')) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchProducts();
+        }
+    }
+});
+
+// --- TOGGLE STATUS ---
+document.querySelector('#productsTable').addEventListener('change', async function(e) {
+    if (e.target.classList.contains('switch')) {
+        const id = e.target.dataset.id;
+        const status = e.target.checked ? 'active' : 'inactive';
+        await fetch(`${API_URL}/${id}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        fetchProducts();
+    }
+});
+
+// --- SEARCH ---
+document.getElementById('searchInput').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('#productsTable tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    });
+});
+
+// --- INITIAL LOAD ---
+fetchProducts();
+
+// --- RESET MODAL ON OPEN ---
+document.getElementById('addProductBtn').addEventListener('click', function() {
+    document.getElementById('productForm').reset();
+    document.getElementById('productId').value = '';
+    document.getElementById('productModalLabel').textContent = 'Add Product';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Lifestyle - Electronics & Mobile Accessories</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style> 
+        .cursor-pointer { cursor: pointer; } 
+        .product-image { transition: transform 0.3s; } 
+        .product-image:hover { transform: scale(1.03); }
+        .card-img-top { height: 200px; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Quality Lifestyle</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="cart-link" style="cursor:pointer;">
+                            Cart <span id="cart-count" class="badge bg-danger">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5" id="products">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="product-grid"></div>
+        <div id="product-detail-container" class="d-none mt-5"></div>
+        <!-- Quantity Modal for Add to Cart (shared for all products) -->
+        <div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Select Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body d-flex align-items-center justify-content-center gap-3">
+                <button class="btn btn-outline-secondary" id="qty-minus">-</button>
+                <input type="number" id="qty-input" class="form-control text-center" value="1" min="1" style="width:60px;">
+                <button class="btn btn-outline-secondary" id="qty-plus">+</button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="addQtyToCart">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('cart-link')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'cart.html';
+        });
+        // Patch: Add Add-to-Cart button to each product card after products are rendered
+        const grid = document.getElementById('product-grid');
+        let selectedProductId = null;
+        const observer = new MutationObserver(() => {
+            Array.from(grid.getElementsByClassName('card-body')).forEach((body, idx) => {
+                if (!body.querySelector('.btn-add-to-cart')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-primary w-100 mt-2 btn-add-to-cart';
+                    btn.textContent = 'Add to Cart';
+                    btn.onclick = function() {
+                        selectedProductId = grid.querySelectorAll('.product-image')[idx].dataset.productId;
+                        document.getElementById('qty-input').value = 1;
+                        new bootstrap.Modal(document.getElementById('quantityModal')).show();
+                    };
+                    body.appendChild(btn);
+                }
+            });
+        });
+        observer.observe(grid, { childList: true, subtree: true });
+
+        // Modal logic for main page
+        document.getElementById('qty-minus').onclick = function() {
+            const input = document.getElementById('qty-input');
+            let qty = Math.max(1, parseInt(input.value) - 1);
+            input.value = qty;
+        };
+        document.getElementById('qty-plus').onclick = function() {
+            const input = document.getElementById('qty-input');
+            let qty = parseInt(input.value) + 1;
+            input.value = qty;
+        };
+        document.getElementById('qty-input').oninput = function() {
+            let qty = Math.max(1, parseInt(this.value) || 1);
+            this.value = qty;
+        };
+        document.getElementById('addQtyToCart').onclick = function() {
+            if (!selectedProductId) return;
+            const qty = Math.max(1, parseInt(document.getElementById('qty-input').value) || 1);
+            if (window.addToCart) window.addToCart(selectedProductId, qty);
+            bootstrap.Modal.getInstance(document.getElementById('quantityModal')).hide();
+        };
+    });
+    </script>
+</body>
+</html>

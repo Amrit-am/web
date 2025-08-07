@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Quality Lifestyle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+
+
+
+
+
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .auth-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .auth-box h1 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      color: #333;
+    }
+    .auth-box p {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .google-btn {
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+    .google-btn:hover {
+      background-color: #f8f9fa;
+    }
+    .toggle-link {
+      margin-top: 1rem;
+      color: #666;
+    }
+    .toggle-link a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .toggle-link a:hover {
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <!-- User Login Box -->
+    <div class="auth-box">
+      <h1>User Login</h1>
+      <p>Login to your account.</p>
+      <form id="loginForm">
+        <div class="form-group">
+          <input type="email" id="loginEmail" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="loginPassword" placeholder="Password" required>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p class="toggle-link">Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a></p>
+    </div>
+
+    <!-- User Signup Box -->
+    <div class="auth-box hidden">
+      <h1>Create an Account</h1>
+      <p>Join us to start your journey.</p>
+      <form id="signupForm">
+        <div class="form-group">
+          <input type="text" id="signupName" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+          <input type="email" id="signupEmail" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <input type="text" id="signupPhone" placeholder="Phone Number" required>
+        </div>
+        <div class="form-group">
+          <input type="text" id="signupAddress" placeholder="Address" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="signupPassword" placeholder="Password" required>
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <button class="google-btn" onclick="googleSignup()">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo">
+        Sign up with Google
+      </button>
+      <p class="toggle-link">Already have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+    </div>
+
+    <!-- Admin Login Box -->
+    <div class="auth-box hidden" id="adminBox">
+      <h1>Admin Login</h1>
+      <p>Login as admin.</p>
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <input type="email" id="adminEmail" placeholder="Admin Email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="adminPassword" placeholder="Password" required>
+        </div>
+        <button type="submit">Admin Login</button>
+      </form>
+      <p class="toggle-link"><a href="#" onclick="toggleAdminUser()">User Login</a></p>
+    </div>
+  </div>
+
+  <!-- Toggle Between Login and Signup Forms -->
+  <script>
+    function toggleForm() {
+      const boxes = document.querySelectorAll('.auth-box');
+      boxes.forEach(box => box.classList.toggle('hidden'));
+      // Hide admin box if toggling user forms
+      document.getElementById('adminBox').classList.add('hidden');
+    }
+    function toggleAdminUser() {
+      // Hide all, show admin box
+      document.querySelectorAll('.auth-box').forEach(box => box.classList.add('hidden'));
+      document.getElementById('adminBox').classList.remove('hidden');
+    }
+    function googleSignup() {
+      // Redirect to Google OAuth (replace with your backend endpoint)
+      window.location.href = 'http://localhost:5000/auth/google';
+    }
+  </script>
+
+  <!-- Auth Form Handlers -->
+  <script>
+    // Handle User Login
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const email = document.getElementById('loginEmail').value;
+          const password = document.getElementById('loginPassword').value;
+          try {
+            const res = await fetch('http://localhost:5000/api/customers/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              localStorage.setItem('userDetails', JSON.stringify({ email }));
+              window.location.href = 'main.html';
+            } else {
+              alert(data.message || 'Login failed.');
+            }
+          } catch (err) {
+            alert('Server error.');
+          }
+        });
+      }
+
+      // Handle User Signup
+      const signupForm = document.getElementById('signupForm');
+      if (signupForm) {
+        signupForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const name = document.getElementById('signupName').value;
+          const email = document.getElementById('signupEmail').value;
+          const phone = document.getElementById('signupPhone').value;
+          const address = document.getElementById('signupAddress').value;
+          const password = document.getElementById('signupPassword').value;
+          try {
+            const res = await fetch('http://localhost:5000/api/customers/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email, phone, address, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              alert('Signup successful! Please login.');
+              toggleForm();
+            } else {
+              alert(data.message || 'Signup failed.');
+            }
+          } catch (err) {
+            alert('Server error.');
+          }
+        });
+      }
+
+      // Handle Admin Login
+      const adminLoginForm = document.getElementById('adminLoginForm');
+      if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const email = document.getElementById('adminEmail').value;
+          const password = document.getElementById('adminPassword').value;
+          try {
+            const res = await fetch('http://localhost:5000/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            if (res.ok && data.user) {
+              localStorage.setItem('adminLoggedIn', 'true');
+              window.location.href = 'admin/admin-dashboard.html';
+            } else {
+              alert(data.message || 'Admin login failed.');
+            }
+          } catch (err) {
+            alert('Server error.');
+          }
+        });
+      }
+    });
+  </script>
+</body>

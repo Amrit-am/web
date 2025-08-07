@@ -1,0 +1,201 @@
+:root {
+    --primary-color: #0d6efd;
+    --hover-color: #0b5ed7;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    height: 70px;
+    object-fit: contain;
+    padding: 15px;
+}
+
+#cart-items .cart-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+.btn-remove {
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-remove:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}
+.toast .btn-link.text-white {
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.toast .btn-link.text-white:hover {
+    opacity: 0.8;
+}
+.toast {
+    z-index: 9999;
+    box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.15);
+    border-radius: 8px;
+}
+
+.toast .btn-link.text-white {
+    text-decoration: none;
+    font-weight: 500;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+/* styles.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-container {
+  text-align: center;
+}
+
+.welcome-container h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.welcome-container p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.welcome-container button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.welcome-container button:hover {
+  background: #218838;
+}
+
+.auth-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  text-align: center;
+}
+
+.auth-box {
+  display: block;
+}
+
+.auth-box.hidden {
+  display: none;
+}
+
+.auth-box h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.auth-box p {
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  color: #fff;
+  background: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: #218838;
+}
+
+.or {
+  margin: 20px 0;
+  font-size: 0.9rem;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  color: #333;
+  background: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.3s ease;
+}
+
+.google-btn:hover {
+  background: #f1f1f1;
+}
+
+.signup-link, .login-link {
+  font-size: 0.9rem;
+  margin-top: 20px;
+}
+
+.signup-link a, .login-link a {
+  color: #28a745;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link a:hover, .login-link a:hover {
+  text-decoration: underline;
+}

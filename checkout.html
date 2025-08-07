@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Quality life</title>
+<div class="container mt-3">
+<a href="index.html?t=${Date.now()}" class="btn btn-outline-secondary">
+    ← Back to Store
+</a>
+    
+    </button>
+</div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!-- Same navigation as index.html -->
+    </nav>
+
+<!-- In checkout.html -->
+<div class="container mt-5">
+    <h2 class="mb-4">Your Cart</h2>
+    <div id="cart-items"></div>
+    <div class="mt-4 border-top pt-3">
+        <h4 class="text-end">
+            Total: $<span id="total">0.00</span>
+        </h4>
+        <div id="checkout-options" class="mb-4">
+          <h5>Choose Delivery Details</h5>
+          <button class="btn btn-outline-primary w-100 mb-2" id="use-saved-details">Use My Saved Details</button>
+          <button class="btn btn-outline-secondary w-100" id="show-form">Enter New Details</button>
+        </div>
+        <form id="checkout-form" class="d-none">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name">
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="address">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Payment Option</label>
+            <select class="form-select" id="payment-option" required>
+              <option value="pay_on_delivery">Pay when delivered</option>
+              <option value="half_now_half_on_delivery">50% now, 50% on delivery</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100 mt-3">Place Order</button>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      // Ensure submitOrder is called on form submit (assumes form id="checkout-form")
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('checkout-form');
+        const useSavedBtn = document.getElementById('use-saved-details');
+        const showFormBtn = document.getElementById('show-form');
+        const optionsDiv = document.getElementById('checkout-options');
+        // Use saved details
+        useSavedBtn.addEventListener('click', function() {
+          const user = JSON.parse(localStorage.getItem('userDetails') || '{}');
+          if (!user.name || !user.email || !user.address) {
+            alert('No saved details found. Please fill the form.');
+            return;
+          }
+          document.getElementById('name').value = user.name;
+          document.getElementById('address').value = user.address;
+          document.getElementById('email').value = user.email;
+          form.classList.remove('d-none');
+          optionsDiv.classList.add('d-none');
+        });
+        // Show form for new details
+        showFormBtn.addEventListener('click', function() {
+          form.reset();
+          form.classList.remove('d-none');
+          optionsDiv.classList.add('d-none');
+        });
+        // Submit order
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (typeof submitOrder === 'function') submitOrder();
+          });
+        }
+      });
+    </script>
+</body>
+</html>

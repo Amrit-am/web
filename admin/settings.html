@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Settings - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Default Theme */
+        :root {
+            --primary-bg: #2c3e50;
+            --secondary-bg: #34495e;
+            --text-color: #333;
+            --font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-family: var(--font-family);
+        }
+
+        .theme-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            margin: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .theme-preview:hover {
+            transform: scale(1.1);
+            border-color: #4e73df;
+        }
+     
+                .floating-back-button { 
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;
+    padding: 12px 20px;
+    background-color: #4CAF50; 
+    color: white; 
+    border-radius: 25px; 
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000; 
+    display: flex;
+     align-items: center; gap: 8px;
+    font-family: 'Arial', sans-serif; 
+} 
+     .floating-back-button:hover { 
+      background-color: #45a049; 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);       
+        transform: translateY(-2px); 
+      }
+    </style>
+</head>
+<body onload="checkAdminAuth()">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <!-- Same as before -->
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="admin-header rounded mb-4">
+            <h4><i class="bi bi-palette"></i> Theme Settings</h4>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="mb-4">Customize Theme</h5>
+   <a href="admin-dashboard.html" class="floating-back-button"> ← Back to Dashboard </a>
+
+                <!-- Background Color Picker -->
+                <div class="mb-4">
+                    <label class="form-label">Background Color</label>
+                    <input type="color" id="bgColorPicker" class="form-control form-control-color" value="#2c3e50">
+                </div>
+
+                <!-- Text Color Picker -->
+                <div class="mb-4">
+                    <label class="form-label">Text Color</label>
+                    <input type="color" id="textColorPicker" class="form-control form-control-color" value="#333333">
+                </div>
+
+                <!-- Font Style Selector -->
+                <div class="mb-4">
+                    <label class="form-label">Font Style</label>
+                    <select id="fontStyleSelect" class="form-select">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="Courier New, monospace">Courier New</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="Times New Roman, serif">Times New Roman</option>
+                    </select>
+                </div>
+
+                <!-- Theme Presets -->
+                <div class="mb-4">
+                    <label class="form-label">Theme Presets</label>
+                    <div class="d-flex flex-wrap">
+                        <div class="theme-preview" style="background: #2c3e50;" onclick="applyTheme('#2c3e50', '#ffffff', 'Arial, sans-serif')"></div>
+                        <div class="theme-preview" style="background: #1a1a1a;" onclick="applyTheme('#1a1a1a', '#f8f9fa', 'Courier New, monospace')"></div>
+                        <div class="theme-preview" style="background: #f8f9fa;" onclick="applyTheme('#f8f9fa', '#333333', 'Georgia, serif')"></div>
+                        <div class="theme-preview" style="background: #004d40;" onclick="applyTheme('#004d40', '#e0f2f1', 'Verdana, sans-serif')"></div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <button class="btn btn-primary" onclick="saveTheme()">
+                    <i class="bi bi-save"></i> Save Theme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Apply Theme Function
+        function applyTheme(bgColor, textColor, fontFamily) {
+            document.documentElement.style.setProperty('--primary-bg', bgColor);
+            document.documentElement.style.setProperty('--text-color', textColor);
+            document.documentElement.style.setProperty('--font-family', fontFamily);
+
+            // Update pickers
+            document.getElementById('bgColorPicker').value = bgColor;
+            document.getElementById('textColorPicker').value = textColor;
+            document.getElementById('fontStyleSelect').value = fontFamily;
+        }
+
+        // Save Theme to LocalStorage
+        function saveTheme() {
+            const theme = {
+                bgColor: document.getElementById('bgColorPicker').value,
+                textColor: document.getElementById('textColorPicker').value,
+                fontFamily: document.getElementById('fontStyleSelect').value
+            };
+            localStorage.setItem('adminTheme', JSON.stringify(theme));
+            alert('Theme saved successfully!');
+        }
+
+        // Load Saved Theme
+        function loadTheme() {
+            const savedTheme = JSON.parse(localStorage.getItem('adminTheme'));
+            if (savedTheme) {
+                applyTheme(savedTheme.bgColor, savedTheme.textColor, savedTheme.fontFamily);
+            }
+        }
+
+        // Load theme on page load
+        document.addEventListener('DOMContentLoaded', loadTheme);
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Analytics - Admin Panel</title>
+    <!-- Add Chart.js -->
+ 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body onload="checkAdminAuth()">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <!-- ... -->
+        <a class="nav-link-admin nav-link active" href="analytics.html">
+            <i class="bi bi-graph-up me-2"></i> Analytics
+</a>
+ <style>
+              .floating-back-button { 
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;
+    padding: 12px 20px;
+    background-color: #4CAF50; 
+    color: white; 
+    border-radius: 25px; 
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000; 
+    display: flex;
+     align-items: center; gap: 8px;
+    font-family: 'Arial', sans-serif; 
+} 
+     .floating-back-button:hover { 
+      background-color: #45a049; 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);       
+        transform: translateY(-2px); 
+      }
+</style>
+
+
+<a href="admin-dashboard.html" class="floating-back-button"> ← Back to Dashboard </a>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="admin-header rounded mb-4">
+            <h4><i class="bi bi-graph-up"></i> Sales Analytics</h4>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Charts
+        const salesChart = new Chart(document.getElementById('salesChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Monthly Sales',
+                    data: [6500, 7900, 10200, 9800, 11500, 13200],
+                    borderColor: '#4e73df',
+                    tension: 0.4
+                }]
+            }
+        });
+
+        const categoryChart = new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Electronics', 'Fashion', 'Home', 'Sports'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e']
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

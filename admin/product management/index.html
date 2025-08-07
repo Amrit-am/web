@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Add Product</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Add New Product</h1>
+    <form id="productForm" autocomplete="off">
+      <div class="form-group">
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" required maxlength="100" placeholder="Enter product name">
+      </div>
+      <div class="form-group">
+        <label for="productImage">Product Image</label>
+        <input type="file" id="productImage" accept="image/*">
+        <img id="imagePreview" src="#" alt="Image Preview" style="display:none;max-width:120px;margin-top:10px;"/>
+      </div>
+      <div class="form-group">
+        <label for="productDescription">Description</label>
+        <textarea id="productDescription" rows="4" required maxlength="500" placeholder="Enter product description"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="productRate">Rate</label>
+        <input type="number" id="productRate" step="0.01" min="0" required placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label for="productBrand">Brand (Optional)</label>
+        <input type="text" id="productBrand" maxlength="50" placeholder="Brand name">
+      </div>
+      <div class="form-group">
+        <label for="productCategory">Category</label>
+        <input type="text" id="productCategory" required maxlength="50" placeholder="Category">
+      </div>
+      <button type="submit">Save Product</button>
+    </form>
+    <div id="formMessage" style="margin-top:15px;"></div>
+  </div>
+
+  <a href="edit-products.html" class="floating-button">Edit Products</a>
+
+  <!-- Only essential scripts included below -->
+  <script src="app.js"></script>
+  <script>
+    // Image preview functionality
+    document.getElementById('productImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('imagePreview');
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          preview.src = evt.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // Basic form validation feedback
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('productName').value.trim();
+      const desc = document.getElementById('productDescription').value.trim();
+      const rate = document.getElementById('productRate').value;
+      const category = document.getElementById('productCategory').value.trim();
+      const msg = document.getElementById('formMessage');
+      if (!name || !desc || !rate || !category) {
+        msg.textContent = 'Please fill all required fields.';
+        msg.style.color = 'red';
+        return;
+      }
+      msg.textContent = 'Product saved (demo only).';
+      msg.style.color = 'green';
+      // Here you would call your save logic (e.g., Firebase)
+    });
+  </script>
+</body>
+</html>

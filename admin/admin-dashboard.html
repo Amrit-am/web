@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Quality Lifestyle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-secondary: #34495e;
+        }
+
+        .dashboard-nav {
+            background: var(--admin-primary);
+            min-height: 100vh;
+            padding: 20px;
+            position: fixed;
+            width: 250px;
+        }
+
+        .nav-link-admin {
+            color: #ecf0f1 !important;
+            transition: all 0.3s;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .nav-link-admin:hover {
+            background: var(--admin-secondary);
+            transform: translateX(10px);
+        }
+
+        .stat-card {
+            transition: transform 0.3s;
+            border: none;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            min-height: 150px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .data-table th {
+            background: var(--admin-primary) !important;
+            color: white !important;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .admin-header {
+            background: var(--admin-primary);
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+       body { 
+           background-color: #f8f9fa;
+              }
+    .dashboard-header 
+      {
+ background-color: #2c3e50; 
+   color: white;
+   padding: 20px; 
+   text-align: center;
+ }
+ </style>
+    
+</head>
+<body onload="checkAdminAuth()">
+<!-- Removed redundant inline script. Auth is handled by checkAdminAuth() -->
+<div class="main-content">
+
+</div>
+
+    <!-- Admin Navigation -->
+    <nav class="dashboard-nav">
+        <div class="text-center mb-4">
+            <h3 class="text-white">Admin Panel</h3>
+            <hr class="text-white">
+        </div>
+        <div class="nav flex-column nav-pills">
+            <a class="nav-link-admin nav-link" href="dashboard.html">
+              <i class="bi bi-speedometer2 me-2"></i> Dashboard </a>
+            
+            <a class="nav-link-admin nav-link" href="order.html">
+                <i class="bi bi-cart-check me-2"></i> Orders
+            </a>
+            <a class="nav-link-admin nav-link" href="customer.html">
+                <i class="bi bi-people me-2"></i> Customers
+            </a>
+            <a class="nav-link-admin nav-link" href="products.html">
+                <i class="bi bi-box-seam me-2"></i> Products
+            </a>
+            <a class="nav-link-admin nav-link" href="analytics.html">
+                <i class="bi bi-graph-up me-2"></i> Analytics
+            </a>
+            <a class="nav-link-admin nav-link" href="settings.html">
+                <i class="bi bi-gear me-2"></i> Settings
+            </a>
+            <a class="nav-link-admin nav-link text-danger" href="#" onclick="logoutAdmin()">
+                <i class="bi bi-box-arrow-left me-2"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="admin-header rounded">
+            <h4><i class="bi bi-speedometer2"></i> Admin Dashboard</h4>
+        </div>
+
+        <!-- Rest of your content remains the same... -->
+
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal fade" id="authModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Login</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="password" class="form-control" id="adminPassword" 
+                           placeholder="Enter admin password">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="verifyAdmin()">Login</button>
+                    <div id="errorMessage" class="text-danger mt-2 text-center" style="display: none;">Invalid credentials!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+        // Enhanced Auth Check
+        function checkAdminAuth() {
+            const isAdmin = localStorage.getItem('adminLoggedIn') === 'true';
+            if (!isAdmin) {
+                const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+                authModal.show();
+            }
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            // Replace with secure authentication in production
+            if (password === 'admin123') {
+                localStorage.setItem('adminLoggedIn', 'true');
+                // Hide modal and reload to show dashboard
+                const authModal = bootstrap.Modal.getInstance(document.getElementById('authModal'));
+                if (authModal) authModal.hide();
+                errorMessage.style.display = 'none';
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'login.html';
+        }
+
+        // Chart.js example (ensure element exists)
+        const salesChartElem = document.getElementById('salesChart');
+        if (salesChartElem) {
+            new Chart(salesChartElem, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Monthly Sales',
+                        data: [6500, 7900, 10200, 9800, 11500, 13200],
+                        borderColor: '#4e73df',
+                        tension: 0.4
+                    }]
+                }
+            });
+        }
+
+        // Table filtering functionality
+        document.querySelectorAll('.data-table').forEach(table => {
+            const searchInput = table.closest('.card').querySelector('input[type="text"]');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const filter = e.target.value.toLowerCase();
+                    // Add filtering logic here
+                });
+            }
+        });
+    </script>
+
+<script src="../js/admin.js"></script>
+</body>
+</html>

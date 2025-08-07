@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    API Usage:
+    - All order CRUD operations use http://localhost:5000/api/orders
+    - Health check: http://localhost:5000/ping (returns 'pong' if backend is up)
+    - If you see 'Server error', check browser dev tools and backend logs.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Quality Lifestyle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        /* Only keep styles used in this file */
+    </style>
+</head>
+<body>
+
+
+ <!-- Orders Page Content -->
+<div class="container-fluid px-4">
+    <div class="d-flex align-items-center mb-3">
+        <a href="admin-dashboard.html" class="btn btn-outline-primary me-3" title="Back to Admin Dashboard">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h1 class="mt-4 text-gradient mb-0">Order Management</h1>
+    </div>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+        <li class="breadcrumb-item active">Orders</li>
+    </ol>
+
+    <div class="card mb-4 shadow-lg">
+        <div class="card-header bg-gradient-primary text-white">
+            <i class="fas fa-table me-1"></i>
+            Order List
+            <div class="float-end">
+                <div class="input-group search-group">
+                    <input type="text" class="form-control search-input" placeholder="Search orders..." id="searchOrders">
+                    <button class="btn btn-light" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <button class="btn btn-light ms-2" id="addNewOrder">
+                    <i class="fas fa-plus-circle me-2"></i>Create New Order
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle" id="ordersTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="text-primary">Order ID</th>
+                    <th class="text-primary">Customer Name</th>
+                    <th class="text-primary">Order Date</th>
+                    <th class="text-primary">Total Items</th>
+                    <th class="text-primary">Products</th>
+                    <th class="text-primary">Status</th>
+                    <th class="text-primary">Payment Option</th>
+                    <th class="text-primary">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list">
+                <!-- Orders will be rendered here by app.js -->
+            </tbody>
+        </table>
+    </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Back to Admin Button -->
+<div class="floating-btn-container">
+    <a href="admin-dashboard.html" class="btn btn-primary btn-floating shadow-lg" title="Back to Admin Dashboard">
+        <i class="bi bi-speedometer2 me-2"></i>Admin Dashboard
+    </a>
+</div>
+
+<!-- Status Edit Modal -->
+<div class="modal fade" id="editStatusModal" tabindex="-1" aria-labelledby="editStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title" id="editStatusModalLabel">Update Order Status</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="statusForm">
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">Select Status</label>
+                        <select class="form-select" id="statusSelect">
+                            <option value="Pending">Pending</option>
+                            <option value="Waiting for Pickup">Waiting for Pickup</option>
+                            <option value="Picked Up">Picked Up</option>
+                            <option value="Sent for Delivery">Sent for Delivery</option>
+                            <option value="Delivered">Delivered</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveStatus">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    .text-gradient {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #4e73df, #224abe) !important;
+    }
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.875em;
+        border-radius: 0.25rem;
+    }
+    .badge.bg-warning {
+        background-color: #f6c23e !important;
+    }
+    .badge.bg-success {
+        background-color: #1cc88a !important;
+    }
+    .badge.bg-info {
+        background-color: #36b9cc !important;
+    }
+    .badge.bg-secondary {
+        background-color: #858796 !important;
+    }
+    .floating-btn-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1000;
+    }
+    .btn-floating {
+        padding: 1rem 1.5rem;
+        border-radius: 2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+        background: linear-gradient(45deg, #4e73df, #224abe);
+        border: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+</style>
+
+<script>
+// --- HEALTH CHECK ---
+fetch('http://localhost:5000/ping').then(r=>r.text()).then(t=>console.log('API health:',t)).catch(()=>alert('Backend API not reachable!'));
+document.addEventListener('DOMContentLoaded', function() {
+    // Only keep necessary code for status modal
+    const editButtons = document.querySelectorAll('.edit-order');
+    const statusSelect = document.getElementById('statusSelect');
+    const saveStatusButton = document.getElementById('saveStatus');
+    let currentRow = null;
+
+    editButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const row = button.closest('tr');
+            const currentStatus = row.querySelector('.status-badge').textContent;
+            statusSelect.value = currentStatus;
+            currentRow = row;
+            new bootstrap.Modal(document.getElementById('editStatusModal')).show();
+        });
+    });
+
+    saveStatusButton.addEventListener('click', () => {
+        if (currentRow) {
+            const newStatus = statusSelect.value;
+            const statusBadge = currentRow.querySelector('.status-badge');
+            statusBadge.textContent = newStatus;
+            statusBadge.className = 'badge status-badge ' + getStatusClass(newStatus);
+            new bootstrap.Modal(document.getElementById('editStatusModal')).hide();
+        }
+    });
+
+    function getStatusClass(status) {
+        switch (status) {
+            case 'Pending':
+                return 'bg-warning';
+            case 'Waiting for Pickup':
+                return 'bg-info';
+            case 'Picked Up':
+                return 'bg-secondary';
+            case 'Sent for Delivery':
+                return 'bg-primary';
+            case 'Delivered':
+                return 'bg-success';
+            default:
+                return 'bg-warning';
+        }
+    }
+
+    // Render orders from backend using app.js logic
+    // (app.js must be loaded in this page)
+    if (typeof renderOrders === 'function') renderOrders();
+});
+</script>
+    <script src="../app.js"></script>
+    <script>
+      // Admin order rendering with payment option
+      async function renderOrders() {
+        const list = document.getElementById('orders-list');
+        if (!list) return;
+        try {
+          const res = await fetch('http://localhost:5000/api/orders');
+          if (!res.ok) throw new Error('Failed to fetch orders');
+          const orders = await res.json();
+          list.innerHTML = '';
+          if (!orders.length) {
+            list.innerHTML = '<tr><td colspan="8">No orders found.</td></tr>';
+            return;
+          }
+          orders.forEach((order, idx) => {
+            const tr = document.createElement('tr');
+            // Product images HTML
+            let imagesHtml = '';
+            if (Array.isArray(order.items)) {
+              imagesHtml = order.items.map(item =>
+                `<img src="${item.image || '/assets/images/placeholder.png'}" alt="${item.name}" title="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;margin-right:4px;">`
+              ).join('');
+            }
+            tr.innerHTML = `
+              <td>${order._id || idx + 1}</td>
+              <td>${order.customer?.name || 'Unknown'}</td>
+              <td>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
+              <td>${order.items?.length || 0}</td>
+              <td>${imagesHtml}</td>
+              <td><span class="badge bg-warning status-badge">${order.status || 'Pending'}</span></td>
+              <td>${order.paymentOption === 'pay_on_delivery' ? 'Pay when delivered' : order.paymentOption === 'half_now_half_on_delivery' ? '50% now, 50% on delivery' : ''}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="updateOrderStatus('${order._id}', this)">Update Status</button>
+                <button class="btn btn-sm btn-info" onclick="viewOrderDetails('${order._id}')">View</button>
+              </td>
+            `;
+            list.appendChild(tr);
+          });
+          window.updateOrderStatus = async function(orderId, btn) {
+            const newStatus = prompt('Enter new status (Pending, Waiting for Pickup, Picked Up, Sent for Delivery, Delivered):');
+            if (!newStatus) return;
+            btn.disabled = true;
+            try {
+              const res = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+              });
+              if (!res.ok) throw new Error('Failed to update');
+              alert('Status updated!');
+              renderOrders();
+            } catch (err) {
+              alert('Failed to update status.');
+            } finally {
+              btn.disabled = false;
+            }
+          };
+          window.viewOrderDetails = function(orderId) {
+            const order = orders.find(o => o._id === orderId);
+            if (!order) return alert('Order not found');
+            let details = `Customer: ${order.customer?.name || ''}\nEmail: ${order.customer?.email || ''}\nAddress: ${order.customer?.address || ''}\nPayment: ${order.paymentOption}\nStatus: ${order.status || 'Pending'}\n\nProducts:`;
+            order.items.forEach(item => {
+              details += `\n- ${item.name} (Qty: ${item.quantity || 1}) - $${item.price}`;
+            });
+            alert(details);
+          };
+        } catch (err) {
+          list.innerHTML = '<tr><td colspan="8" class="text-danger">Failed to load orders.</td></tr>';
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        renderOrders();
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

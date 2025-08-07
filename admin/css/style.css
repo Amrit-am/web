@@ -1,0 +1,74 @@
+:root {
+    --admin-primary: #2c3e50;
+    --admin-secondary: #34495e;
+}
+
+.dashboard-nav {
+    background: var(--admin-primary);
+    min-height: 100vh;
+    padding: 20px;
+    position: fixed;
+    width: 250px;
+}
+
+.nav-link-admin {
+    color: #ecf0f1 !important;
+    transition: all 0.3s;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.nav-link-admin:hover {
+    background: var(--admin-secondary);
+    transform: translateX(10px);
+}
+
+.stat-card {
+    transition: transform 0.3s;
+    border: none;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    min-height: 150px;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.admin-header {
+    background: var(--admin-primary);
+    color: white;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+    background-color: rgba(245, 245, 245, 0.5);
+    border: 2px dashed #dee2e6;
+    transition: all 0.3s ease;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.image-upload-container:hover {
+    background-color: rgba(245, 245, 245, 0.8);
+    border-color: #0d6efd;
+}
+
+.image-upload-container.dragover {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: #0d6efd;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
